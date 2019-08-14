@@ -16,18 +16,29 @@ package org.lhx.java;
  * 8、stop():已过世，强制结束当前线程。
  * 9、sleep(long millitime):让当前线程睡眠指定的millitime毫秒，在指定的millitime毫秒内，当前线程是阻塞状态。
  * 10、isAlive():判断当前线程是否存活。
+ *
+ * 线程的优先等级：
+ * 	MAX_PRIORITY:10
+ * 	MIN_PRIORITY:1
+ * 	NORM_PRIORITY:5  默认优先级
+ * 获取和设置线程的优先级：
+ * 	getPriority():返回线程优先级
+ * 	setPriority():改变线程的优先级
+ * 说明：
+ * 	线程创建时继承父线程的优先级。
+ * 	低优先级只是获得调度的概率低，并非一定是在高优先级线程之后才被调用。
  */
 class TestThreadMethod extends Thread {
     @Override
     public void run() {
         for (int i = 0; i < 100; i++) {
             if (i % 2 == 0) {
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                System.out.println(Thread.currentThread().getName() + ":" + i);
+//                try {
+//                    sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+                System.out.println(Thread.currentThread().getName() + ":" + Thread.currentThread().getPriority() + ":" + i);
             }
 
             if (i % 20 == 0) {
@@ -49,6 +60,7 @@ public class ThreadMethodTest {
     public static void main(String[] args) {
         TestThreadMethod testThreadMethod = new TestThreadMethod();
         testThreadMethod.setName("线程一");
+        testThreadMethod.setPriority(Thread.MAX_PRIORITY);
         testThreadMethod.start();
 
         TestThreadMethod testThreadMethod1 = new TestThreadMethod("线程二");
@@ -56,18 +68,19 @@ public class ThreadMethodTest {
 
         //给主线程命名
         Thread.currentThread().setName("主线程");
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         for (int i = 0; i < 100; i++) {
             if (i % 2 == 0) {
-                System.out.println(Thread.currentThread().getName() + ":" + i);
+                System.out.println(Thread.currentThread().getName() + ":" + Thread.currentThread().getPriority() + ":" + i);
             }
 
-            if (i == 20) {
-                try {
-                    testThreadMethod.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+//            if (i == 20) {
+//                try {
+//                    testThreadMethod.join();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
         }
     }
 
