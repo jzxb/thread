@@ -2,10 +2,18 @@ package org.lhx.nio;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
 
 /**
  * @author lhx
@@ -126,14 +134,47 @@ public class TestChannel {
         FileChannel raf2Channel = raf2.getChannel();
         raf2Channel.write(bufs);
         String a = "abc";
-        a.length()
+        a.length();
     }
 
-    public static void main(String[] args) {
-        try {
-            test4();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static void test5() {
+        //字符集
+        SortedMap<String, Charset> stringCharsetSortedMap = Charset.availableCharsets();
+        Set<Map.Entry<String, Charset>> set = stringCharsetSortedMap.entrySet();
+        for (Map.Entry<String, Charset> stringCharsetEntry : set) {
+            System.out.println(stringCharsetEntry.getKey() + "=" + stringCharsetEntry.getValue());
         }
+    }
+
+    public static void test6() throws CharacterCodingException {
+        Charset cs1 = Charset.forName("GBK");
+
+        //获取编码器与解码器
+        //编码器
+        CharsetEncoder charsetEncoder = cs1.newEncoder();
+        //解码器
+        CharsetDecoder charsetDecoder = cs1.newDecoder();
+
+        CharBuffer charBuffer = CharBuffer.allocate(1024);
+        charBuffer.put("近战小白");
+        charBuffer.flip();
+
+        //编码
+        ByteBuffer encode = charsetEncoder.encode(charBuffer);
+        for (int i = 0; i < 6; i++) {
+            System.out.println(encode.get());
+        }
+        encode.flip();
+        CharBuffer decode = charsetDecoder.decode(encode);
+        System.out.println(decode.toString());
+
+        Charset cs2 = Charset.forName("UTF-8");
+        encode.flip();
+        CharBuffer decode1 = cs2.decode(encode);
+        System.out.println(decode1.toString());
+    }
+
+    public static void main(String[] args) throws CharacterCodingException {
+        test6();
     }
 }
